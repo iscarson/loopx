@@ -115,7 +115,6 @@ def select_goal_frontier_replan_rule(
             facts.acceptance_gap_count > 0
             and (
                 facts.successor_vision_required
-                or facts.outcome_checkpoint_replan_required
                 or facts.selectable_frontier_advancement == 0
             )
             and (
@@ -125,7 +124,7 @@ def select_goal_frontier_replan_rule(
             True,
             (
                 "the scoped vision gap lacks a fresh evidence-linked outcome "
-                "checkpoint or satisfying runnable frontier"
+                "checkpoint and no satisfying runnable frontier can continue it"
             ),
         ),
         (

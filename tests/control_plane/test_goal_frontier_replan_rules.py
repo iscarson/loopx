@@ -52,11 +52,15 @@ from loopx.control_plane.goals.goal_frontier.replan_rules import (
             {
                 "acceptance_gap_count": 1,
                 "selectable_frontier_advancement": 1,
+                "agent_advancement_count": 1,
+                "total_frontier_advancement": 1,
                 "outcome_checkpoint_replan_required": True,
                 "acceptance_allows_watch_lane_continuation": True,
+                "monitor_only_lane": True,
+                "monitor_count": 1,
             },
-            GoalFrontierReplanRule.VISION_ACCEPTANCE_GAP,
-            True,
+            GoalFrontierReplanRule.ADVANCEMENT_REMAINS,
+            False,
         ),
         (
             {
@@ -210,6 +214,33 @@ def test_current_agent_advancement_satisfies_scoped_vision_frontier() -> None:
         agent_id="current-agent",
         existing_replan_obligation=None,
         acceptance_gaps=_repeat_vision_gap(),
+    )
+
+    assert obligation is None
+
+
+def test_material_outcome_checkpoint_does_not_preempt_runnable_advancement() -> None:
+    current_item = _advancement("todo_current", "current-agent")
+
+    obligation = derive_goal_frontier_replan_obligation_from_summaries(
+        user_todo_summary={"open_count": 0},
+        agent_todo_summary={
+            "open_count": 1,
+            "claimed_advancement_open_count": 1,
+            "current_agent_claimed_advancement_count": 1,
+            "executable_backlog_items": [current_item],
+            "claim_scope": {"other_agent_claimed_items": []},
+        },
+        work_lane_contract={"lane": "advancement_task", "must_attempt_work": True},
+        agent_id="current-agent",
+        existing_replan_obligation=None,
+        acceptance_gaps=[
+            {
+                "kind": "vision_outcome_checkpoint_required",
+                "replan_trigger_summary": "a prior material slice needs an outcome checkpoint",
+                "acceptance_summary": "continue the active implementation frontier",
+            }
+        ],
     )
 
     assert obligation is None

@@ -434,7 +434,7 @@ def test_qualified_checkpoint_resets_the_completed_todo_chain() -> None:
     )
 
 
-def test_completed_chain_replan_precedes_runnable_advancement() -> None:
+def test_completed_chain_checkpoint_does_not_preempt_runnable_advancement() -> None:
     active_vision = _outcome_vision(
         generated_at="2026-07-12T00:01:00Z",
         evidence_refs=["result:bounded-progress"],
@@ -477,11 +477,7 @@ def test_completed_chain_replan_precedes_runnable_advancement() -> None:
         acceptance_gaps=gaps,
     )
 
-    assert obligation is not None
-    trigger = obligation["triggers"][0]
-    assert trigger["kind"] == "vision_outcome_checkpoint_required"
-    assert trigger["completed_todo_count"] == 5
-    assert trigger["completed_todo_threshold"] == 5
+    assert obligation is None
 
 
 def test_plain_refresh_after_completed_todo_does_not_clear_checkpoint_gap() -> None:
