@@ -856,7 +856,7 @@ agent-to-agent handoff cadence too quickly;
 `backoff_until_material_transition` handles monitor-only quiet polls; and
 `backoff_until_fresh_evidence` handles mapped or post-handoff no-op waits.
 Active work whose execution profile requires an implementation or multi-surface
-batch uses a 20-minute overlap guard. A Codex App heartbeat is a thread wakeup,
+batch uses a 15-minute overlap guard. A Codex App heartbeat is a thread wakeup,
 so a tighter recurring trigger can replace an implementation turn before its
 code, validation, and writeback settle. Small control-plane turns without that
 minimum-scale contract retain the short active cadence.

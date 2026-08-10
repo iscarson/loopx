@@ -797,12 +797,12 @@ def main() -> int:
         assert first_guard["automation_liveness"]["pause_allowed"] is False, first_guard
         assert first_guard["scheduler_hint"]["action"] == "run_now", first_guard
         assert first_guard["scheduler_hint"]["cadence_class"] == "active_work", first_guard
-        assert first_guard["scheduler_hint"]["codex_app"]["recommended_interval_minutes"] == 20, first_guard
+        assert first_guard["scheduler_hint"]["codex_app"]["recommended_interval_minutes"] == 15, first_guard
         assert first_guard["scheduler_hint"]["codex_app"]["recommended_rrule"] == (
-            "FREQ=MINUTELY;INTERVAL=20"
+            "FREQ=MINUTELY;INTERVAL=15"
         ), first_guard
         reset = first_guard["scheduler_hint"]["reset_policy"]
-        assert reset["codex_app_initial_rrule"] == "FREQ=MINUTELY;INTERVAL=20", reset
+        assert reset["codex_app_initial_rrule"] == "FREQ=MINUTELY;INTERVAL=15", reset
         assert "reset_condition_summary" not in reset, reset
         frontier = first_guard["goal_frontier_projection"]
         assert frontier["monitor_only_lanes"]["present"] is True, frontier

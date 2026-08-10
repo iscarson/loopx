@@ -240,10 +240,10 @@ def test_implementation_scale_active_work_uses_overlap_safe_cadence() -> None:
     )
 
     assert hint["cadence_class"] == "active_work"
-    assert hint["codex_app"]["recommended_interval_minutes"] == 20
-    assert hint["codex_app"]["example_progression_minutes"] == [20]
+    assert hint["codex_app"]["recommended_interval_minutes"] == 15
+    assert hint["codex_app"]["example_progression_minutes"] == [15]
     assert hint["reset_policy"]["codex_app_initial_rrule"] == (
-        "FREQ=MINUTELY;INTERVAL=20"
+        "FREQ=MINUTELY;INTERVAL=15"
     )
     assert hint["cold_path_detail"]["cadence_context"] == {
         "schema_version": "active_work_cadence_context_v0",

@@ -294,7 +294,7 @@ def assert_bounded_delivery_state_machine_bundle(quota_payload: dict[str, Any]) 
     assert scheduler["action"] == "run_now", scheduler
     assert scheduler["cadence_class"] == "active_work", scheduler
     codex_app = scheduler["codex_app"]
-    assert codex_app["recommended_rrule"] == "FREQ=MINUTELY;INTERVAL=20", scheduler
+    assert codex_app["recommended_rrule"] == "FREQ=MINUTELY;INTERVAL=15", scheduler
     assert codex_app["no_spend_for_cadence_change"] is True, scheduler
     assert codex_app["stateful_backoff"]["apply_needed"] is True, scheduler
 
