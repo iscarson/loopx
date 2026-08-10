@@ -18,8 +18,9 @@ HEARTBEAT_NOTIFICATION_RULE_SHORT = (
     "具体user todo未投影，需修复LoopX状态投影."
 )
 HEARTBEAT_VISION_WRITEBACK_RULE_SHORT = (
-    "writeback: no-change=`surface_only`/no spend; "
-    "unchanged->`--vision-unchanged-reason`; material->actual outcome."
+    "writeback: material=actual outcome + vision patch/"
+    "`--vision-unchanged-reason` in same refresh; missing=>retry before "
+    "spend/exit; no-change=`surface_only`/no spend."
 )
 SCHEDULER_HINT_APPLICATION_RULE = (
     "`scheduler_hint` no-spend. host_action=pause_or_delete_current_heartbeat -> "

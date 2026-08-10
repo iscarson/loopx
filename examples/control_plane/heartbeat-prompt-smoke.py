@@ -78,8 +78,10 @@ def user_output_policy(task_body: str, *, mode: str) -> dict[str, str]:
 
 def assert_sole_notification_authority(task_body: str, *, mode: str) -> None:
     body = normalized(task_body)
-    assert "no-change=`surface_only`/no spend; unchanged->" in body, mode
-    assert "`--vision-unchanged-reason`; material->actual outcome." in body, mode
+    assert "material=actual outcome + vision patch/" in body, mode
+    assert "`--vision-unchanged-reason` in same refresh" in body, mode
+    assert "missing=>retry before spend/exit" in body, mode
+    assert "no-change=`surface_only`/no spend" in body, mode
 
     if mode == "full":
         assert (
@@ -585,7 +587,8 @@ def main() -> int:
         "host_action=pause_or_delete_current_heartbeat->automation_update stop(no-spend)",
         "else RRULE/ack/fail",
         "no-change=`surface_only`/no spend",
-        "unchanged->`--vision-unchanged-reason`",
+        "`--vision-unchanged-reason` in same refresh",
+        "missing=>retry before spend/exit",
         "guard receipt; 2 stalls->replan",
         "`lark_event_inbox`: reply_due",
         "drain_command/reply-readback/ACK",
@@ -682,7 +685,8 @@ def main() -> int:
         "host_action=pause_or_delete_current_heartbeat->automation_update stop(no-spend)",
         "else RRULE/ack/fail",
         "no-change=`surface_only`/no spend",
-        "unchanged->`--vision-unchanged-reason`",
+        "`--vision-unchanged-reason` in same refresh",
+        "missing=>retry before spend/exit",
         "guard receipt; 2 stalls->replan",
         "P0 blocked: safe P1/P2",
         "monitor quiet/no-spend",
@@ -698,8 +702,9 @@ def main() -> int:
         ("thin", thin_task),
     ):
         assert "no-change=`surface_only`/no spend" in task, label
-        assert "`--vision-unchanged-reason`" in task, label
-        assert "material->actual outcome" in task, label
+        assert "`--vision-unchanged-reason` in same refresh" in task, label
+        assert "material=actual outcome + vision patch/" in task, label
+        assert "missing=>retry before spend/exit" in task, label
     assert "if absent say" not in thin_task, thin_task
     assert "If false/0: quiet/no-user-todo" not in thin_task, thin_task
 

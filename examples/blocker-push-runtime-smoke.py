@@ -215,8 +215,10 @@ def main() -> int:
         assert "missing NOTIFY action->具体user todo未投影" in compact_prompt, prompt
         assert "`LOOPX_TURN=<current_time_iso>`; reuse." in compact_prompt, prompt
         assert "guard receipt; 2 stalls->replan" in compact_prompt, prompt
+        assert "material=actual outcome + vision patch/" in compact_prompt, prompt
+        assert "`--vision-unchanged-reason` in same refresh" in compact_prompt, prompt
+        assert "missing=>retry before spend/exit" in compact_prompt, prompt
         assert "no-change=`surface_only`/no spend" in compact_prompt, prompt
-        assert "unchanged->`--vision-unchanged-reason`" in compact_prompt, prompt
 
     print("blocker-push-runtime-smoke ok")
     return 0

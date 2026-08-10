@@ -76,6 +76,16 @@ MONITOR_WAIT_IDENTITY_KEYS = SCHEDULER_BASE_IDENTITY_KEYS
 CODEX_APP_SSH_GOAL_RUNTIME_KEY = SchedulerRuntimeProfile.CODEX_APP_SSH_VISIBLE.value
 CODEX_NATIVE_GOAL_BLOCK_ACTION = "update_goal_blocked_keep_loopx_active"
 CODEX_NATIVE_GOAL_RESUME_TRIGGER = "explicit_codex_goal_resume"
+ACTIVE_WORK_INTERVAL_MINUTES = 3
+ACTIVE_WORK_MAX_INTERVAL_MINUTES = 10
+IMPLEMENTATION_ACTIVE_WORK_INTERVAL_MINUTES = 20
+IMPLEMENTATION_ACTIVE_WORK_MINIMUM_SCALES = frozenset(
+    {
+        "implementation",
+        "multi_surface",
+        "multi_surface_or_implementation",
+    }
+)
 
 build_codex_app_scheduler_ack_event = scheduler_ack.build_codex_app_scheduler_ack_event
 build_scheduler_ack_plan = scheduler_ack.build_scheduler_ack_plan
@@ -94,6 +104,33 @@ def _stable_digest(value: Any, *, length: int) -> str:
 
 def _dict_or_empty(value: Any) -> dict[str, Any]:
     return value if isinstance(value, dict) else {}
+
+
+def _active_work_cadence(
+    payload: Mapping[str, Any],
+) -> tuple[int, int, dict[str, Any] | None]:
+    """Keep implementation heartbeats from waking over an active model turn."""
+
+    profile = _dict_or_empty(payload.get("execution_profile"))
+    profile_source = "execution_profile"
+    if not profile:
+        boundary = _dict_or_empty(payload.get("goal_boundary"))
+        profile = _dict_or_empty(boundary.get("execution_profile"))
+        profile_source = "goal_boundary.execution_profile"
+    minimum_scale = str(profile.get("minimum_scale") or "").strip()
+    if minimum_scale not in IMPLEMENTATION_ACTIVE_WORK_MINIMUM_SCALES:
+        return ACTIVE_WORK_INTERVAL_MINUTES, ACTIVE_WORK_MAX_INTERVAL_MINUTES, None
+    return (
+        IMPLEMENTATION_ACTIVE_WORK_INTERVAL_MINUTES,
+        IMPLEMENTATION_ACTIVE_WORK_INTERVAL_MINUTES,
+        {
+            "schema_version": "active_work_cadence_context_v0",
+            "mode": "implementation_overlap_guard",
+            "profile_source": profile_source,
+            "minimum_scale": minimum_scale,
+            "reason_codes": ["implementation_turn_requires_non_reentrant_wakeup"],
+        },
+    )
 
 
 def _scheduler_identity_keys(
@@ -1009,6 +1046,7 @@ def build_scheduler_hint(
             and isinstance(agent_channel, Mapping)
             and agent_channel.get("delivery_allowed") is False
         )
+        active_interval, active_max, cadence_context = _active_work_cadence(payload)
         return builder.build(
             action="run_now",
             cadence_class="active_work",
@@ -1016,10 +1054,14 @@ def build_scheduler_hint(
                 "the interaction contract requires an agent attempt; keep the active "
                 "scheduler cadence until the turn validates or blocks"
             ),
-            codex_interval=3,
-            codex_max=10,
+            codex_interval=active_interval,
+            codex_max=active_max,
             cli_limit=None,
             claude_limit=None,
+            cadence_progression_override=(
+                [active_interval] if cadence_context is not None else None
+            ),
+            cadence_context_detail=cadence_context,
             advance_same_identity=capability_bridge_wait,
         )
 

@@ -170,10 +170,10 @@ def assert_quota_parity(payload: dict) -> None:
     assert scheduler["action"] == "run_now", scheduler
     assert scheduler["cadence_class"] == "active_work", scheduler
     codex_app = scheduler["codex_app"]
-    assert codex_app["recommended_rrule"] == "FREQ=MINUTELY;INTERVAL=3", scheduler
-    assert codex_app["recommended_interval_minutes"] == 3, scheduler
+    assert codex_app["recommended_rrule"] == "FREQ=MINUTELY;INTERVAL=20", scheduler
+    assert codex_app["recommended_interval_minutes"] == 20, scheduler
     assert codex_app["no_spend_for_cadence_change"] is True, scheduler
-    assert scheduler["reset_policy"]["codex_app_initial_rrule"] == "FREQ=MINUTELY;INTERVAL=3", scheduler
+    assert scheduler["reset_policy"]["codex_app_initial_rrule"] == "FREQ=MINUTELY;INTERVAL=20", scheduler
 
 
 def assert_handoff_parity(payload: dict) -> None:

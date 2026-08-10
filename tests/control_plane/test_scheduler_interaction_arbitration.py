@@ -222,6 +222,38 @@ def test_raw_should_run_false_cannot_silently_cancel_final_contract_delivery() -
     assert "consistency_error" not in hint
 
 
+def test_implementation_scale_active_work_uses_overlap_safe_cadence() -> None:
+    payload = _payload(
+        mode="bounded_delivery",
+        should_run=True,
+        user_required=False,
+        must_attempt=True,
+        delivery_allowed=True,
+        quiet_noop_allowed=False,
+    )
+    payload["execution_profile"] = {"minimum_scale": "implementation"}
+
+    hint = _app_scheduler_hint(
+        payload,
+        agent_scope_frontier_actions=AGENT_SCOPE_ACTIONS,
+        include_detail=True,
+    )
+
+    assert hint["cadence_class"] == "active_work"
+    assert hint["codex_app"]["recommended_interval_minutes"] == 20
+    assert hint["codex_app"]["example_progression_minutes"] == [20]
+    assert hint["reset_policy"]["codex_app_initial_rrule"] == (
+        "FREQ=MINUTELY;INTERVAL=20"
+    )
+    assert hint["cold_path_detail"]["cadence_context"] == {
+        "schema_version": "active_work_cadence_context_v0",
+        "mode": "implementation_overlap_guard",
+        "profile_source": "execution_profile",
+        "minimum_scale": "implementation",
+        "reason_codes": ["implementation_turn_requires_non_reentrant_wakeup"],
+    }
+
+
 def test_branch_order_mutation_is_killed_by_final_contract() -> None:
     payload = _payload(
         mode="user_gate",

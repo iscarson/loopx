@@ -479,6 +479,10 @@ If the result says should_run=true:
    Replace all three placeholders with values proven by this validated turn.
    Never default or upgrade smaller/preparatory work to
    `multi_surface` / `outcome_progress`.
+   The same material refresh must include either an agent vision patch or
+   `--vision-unchanged-reason`. If the refresh reports a missing vision
+   checkpoint or baseline, repair and retry it in the same turn before spend
+   or exit; do not defer that repair to the next heartbeat.
    This refresh is the causal delivery record consumed by `quota spend-slot`.
    A plain state-only refresh is quota-neutral and cannot replace it. Then, for
    a minute-based heartbeat, spend one slot:
